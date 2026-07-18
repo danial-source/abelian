@@ -1,0 +1,666 @@
+{
+ "module": "hazard_assessment_scoring_v2",
+ "module_version": "0.2.0",
+ "query": {
+  "latitude": 38.5946,
+  "longitude": -122.5637
+ },
+ "wildfire": {
+  "available": true,
+  "method": "proxy_fallback",
+  "annual_risk_usd": null,
+  "risk_tier": null,
+  "damage_probability": 0.865,
+  "fire_frequency_per_year": 0.2,
+  "historical_fires": [
+   {
+    "name": "Tubbs",
+    "year": 2017,
+    "acres": 36807.37
+   },
+   {
+    "name": "CLOVER",
+    "year": 2017,
+    "acres": 13.9
+   },
+   {
+    "name": "Hwy 29 Fuel Break - Phase 1",
+    "year": 2015,
+    "acres": 43.18719
+   },
+   {
+    "name": "WILDLAKE VMP",
+    "year": 1994,
+    "acres": 71.35973
+   },
+   {
+    "name": "PALISADES",
+    "year": 1983,
+    "acres": 191.2039
+   },
+   {
+    "name": "SILVERADO",
+    "year": 1982,
+    "acres": 6218.79
+   },
+   {
+    "name": "PALISADES VMP",
+    "year": 1981,
+    "acres": 106.2427
+   },
+   {
+    "name": "C. HANLY",
+    "year": 1964,
+    "acres": 55960.7
+   },
+   {
+    "name": "C. SAVIEZ",
+    "year": 1959,
+    "acres": 205.4
+   }
+  ],
+  "fuel_model_fbfm40": 184,
+  "canopy_cover_pct": 55.0,
+  "replacement_value_usd": null,
+  "nsi_replacement_value": null,
+  "nsi_building_type": null,
+  "nsi_source": null,
+  "nsi_available": false,
+  "confidence": 0.5,
+  "sources_used": {
+   "wf_likelihood": "nifc_fire_perimeters",
+   "wf_fuel_proximity": "landfire_wcs_fuel",
+   "wf_canopy": "landfire_wcs_canopy"
+  },
+  "note": "Proxy/fallback wildfire estimate: NIFC historical fire frequency (burn-probability proxy) \u00d7 LANDFIRE on-demand fuel/canopy damage factor \u00d7 NSI replacement value. Lower confidence than FSim. Wildfire vulnerability model calibrated on Sonoma County CAL FIRE DINS data (AUC 0.76). Application outside Sonoma County uses the same coefficients without local calibration, and requires pre-computed FSim/LANDFIRE/3DEP structure features (currently loaded for Sonoma County).",
+  "criteria_confidence": {
+   "wf_likelihood": {
+    "confidence": 0.5,
+    "tier": "LOW",
+    "quality_note": "Using proxy source (nifc_fire_perimeters): Historical fire frequency near the location (perimeters through 2024). Computed as fire_count / years_of_record.",
+    "selected_source": "nifc_fire_perimeters",
+    "display_name": "Wildfire burn probability",
+    "source_display": "Historical Fire Perimeters"
+   },
+   "wf_fuel_proximity": {
+    "confidence": 0.9,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (landfire_wcs_fuel): Same LANDFIRE fuel-model data queried on-demand at any CONUS coordinate. Returns the FBFM40 value at the point.",
+    "selected_source": "landfire_wcs_fuel",
+    "display_name": "Distance to burnable fuel",
+    "source_display": "LANDFIRE Fuel Model (on-demand)"
+   },
+   "wf_structure": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (usace_nsi): Occupancy class, foundation, stories, replacement value",
+    "selected_source": "usace_nsi",
+    "display_name": "Building vulnerability",
+    "source_display": "National Structure Inventory"
+   },
+   "wf_canopy": {
+    "confidence": 0.9,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (landfire_wcs_canopy): Same LANDFIRE canopy-cover data queried on-demand. Returns canopy cover percentage at a point. Single-point query \u2014 does not support the multi-buffer defensible-space computation.",
+    "selected_source": "landfire_wcs_canopy",
+    "display_name": "Canopy cover (defensible space)",
+    "source_display": "LANDFIRE Canopy Cover (on-demand)"
+   },
+   "wf_slope": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (usgs_3dep): Slope in degrees from 3DEP",
+    "selected_source": "usgs_3dep",
+    "display_name": "Terrain slope (fire behavior)",
+    "source_display": "USGS 3D Elevation Program"
+   }
+  }
+ },
+ "flood": {
+  "available": true,
+  "annual_risk_usd": null,
+  "risk_tier": null,
+  "flood_zone": "X",
+  "in_special_flood_hazard_area": false,
+  "depth_ft": null,
+  "depth_basis": "outside the Special Flood Hazard Area \u2014 no modeled inundation",
+  "static_bfe_ft": null,
+  "ground_elevation_ft": 849.01,
+  "annual_exceedance_probability": 0.001,
+  "return_period_years": 1000,
+  "damage": {
+   "hazus_occupancy_class": "RES1-1SNB",
+   "structural_damage_pct": 0.0,
+   "contents_damage_pct": 0.0,
+   "structural_loss_usd": null,
+   "contents_loss_usd": null,
+   "total_loss_usd": null
+  },
+  "nsi_replacement_value": null,
+  "nsi_building_type": null,
+  "nsi_source": null,
+  "nsi_available": false,
+  "structure_matched": false,
+  "criteria_confidence": {
+   "fl_depth": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 3 component source(s) available. Supplementary data available: google_inundation_history",
+    "selected_source": "fema_nfhl",
+    "display_name": "Estimated flood depth",
+    "source_display": "National Flood Hazard Layer"
+   },
+   "fl_zone": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (fema_nfhl): Flood zone (A, AE, V, VE, X, D), BFE where published",
+    "selected_source": "fema_nfhl",
+    "display_name": "FEMA flood zone",
+    "source_display": "National Flood Hazard Layer"
+   },
+   "fl_historical": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (openfema_disasters): Disaster declarations by county + NFIP claims by zip code",
+    "selected_source": "openfema_disasters",
+    "display_name": "Historical flood events",
+    "source_display": "Disaster Declarations"
+   },
+   "fl_hydrology": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 1 component source(s) available. Supplementary data available: usgs_peak_flow",
+    "selected_source": "usgs_nhdplus",
+    "display_name": "Hydrological exposure",
+    "source_display": "usgs_nhdplus"
+   },
+   "fl_building": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 2 component source(s) available",
+    "selected_source": "hazus_ddfs",
+    "display_name": "Building damage estimate",
+    "source_display": "HAZUS Depth-Damage Functions"
+   }
+  }
+ },
+ "confidence": {
+  "tier": "HIGH",
+  "composite": 0.895,
+  "statement": "This assessment uses authoritative data for the majority of criteria. Proxy or partial data was used for Wildfire burn probability. Verify those before relying on the result.",
+  "completeness": "10 of 10 scored criteria, 0 of 0 exclusion criteria",
+  "gaps": [],
+  "strongest_data": [
+   "fl_depth (authoritative)",
+   "fl_zone (authoritative)",
+   "wf_fuel_proximity (authoritative)",
+   "wf_structure (authoritative)",
+   "fl_historical (authoritative)",
+   "fl_hydrology (authoritative)",
+   "wf_canopy (authoritative)",
+   "fl_building (authoritative)",
+   "wf_slope (authoritative)"
+  ],
+  "weakest_data": [
+   "wf_likelihood (Using proxy source (nifc_fire_perimeters): Historical fire frequency near the location (perimeters through 2024). Computed as fire_count / years_of_record.)"
+  ],
+  "per_criterion": {
+   "wf_likelihood": {
+    "confidence": 0.5,
+    "tier": "LOW",
+    "quality_note": "Using proxy source (nifc_fire_perimeters): Historical fire frequency near the location (perimeters through 2024). Computed as fire_count / years_of_record.",
+    "selected_source": "nifc_fire_perimeters",
+    "display_name": "Wildfire burn probability",
+    "source_display": "Historical Fire Perimeters"
+   },
+   "fl_depth": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 3 component source(s) available. Supplementary data available: google_inundation_history",
+    "selected_source": "fema_nfhl",
+    "display_name": "Estimated flood depth",
+    "source_display": "National Flood Hazard Layer"
+   },
+   "fl_zone": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (fema_nfhl): Flood zone (A, AE, V, VE, X, D), BFE where published",
+    "selected_source": "fema_nfhl",
+    "display_name": "FEMA flood zone",
+    "source_display": "National Flood Hazard Layer"
+   },
+   "wf_fuel_proximity": {
+    "confidence": 0.9,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (landfire_wcs_fuel): Same LANDFIRE fuel-model data queried on-demand at any CONUS coordinate. Returns the FBFM40 value at the point.",
+    "selected_source": "landfire_wcs_fuel",
+    "display_name": "Distance to burnable fuel",
+    "source_display": "LANDFIRE Fuel Model (on-demand)"
+   },
+   "wf_structure": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (usace_nsi): Occupancy class, foundation, stories, replacement value",
+    "selected_source": "usace_nsi",
+    "display_name": "Building vulnerability",
+    "source_display": "National Structure Inventory"
+   },
+   "fl_historical": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (openfema_disasters): Disaster declarations by county + NFIP claims by zip code",
+    "selected_source": "openfema_disasters",
+    "display_name": "Historical flood events",
+    "source_display": "Disaster Declarations"
+   },
+   "fl_hydrology": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 1 component source(s) available. Supplementary data available: usgs_peak_flow",
+    "selected_source": "usgs_nhdplus",
+    "display_name": "Hydrological exposure",
+    "source_display": "usgs_nhdplus"
+   },
+   "wf_canopy": {
+    "confidence": 0.9,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (landfire_wcs_canopy): Same LANDFIRE canopy-cover data queried on-demand. Returns canopy cover percentage at a point. Single-point query \u2014 does not support the multi-buffer defensible-space computation.",
+    "selected_source": "landfire_wcs_canopy",
+    "display_name": "Canopy cover (defensible space)",
+    "source_display": "LANDFIRE Canopy Cover (on-demand)"
+   },
+   "fl_building": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "All 2 component source(s) available",
+    "selected_source": "hazus_ddfs",
+    "display_name": "Building damage estimate",
+    "source_display": "HAZUS Depth-Damage Functions"
+   },
+   "wf_slope": {
+    "confidence": 1.0,
+    "tier": "HIGH",
+    "quality_note": "Using authoritative source (usgs_3dep): Slope in degrees from 3DEP",
+    "selected_source": "usgs_3dep",
+    "display_name": "Terrain slope (fire behavior)",
+    "source_display": "USGS 3D Elevation Program"
+   }
+  }
+ },
+ "methodology": {
+  "workflow_type": "hazard_assessment",
+  "framework_citations": [
+   {
+    "name": "Finney et al. (2011)",
+    "role": "FSim wildfire simulation framework",
+    "venue": "Stochastic Environmental Research and Risk Assessment 25:973-1000"
+   },
+   {
+    "name": "Syphard et al. (2012)",
+    "role": "housing-arrangement wildfire exposure",
+    "venue": "PLoS ONE 7(3):e33954"
+   },
+   {
+    "name": "Kramer et al. (2018)",
+    "role": "Coffey Park pattern \u2014 structure-to-structure cascades",
+    "venue": "International Journal of Wildland Fire 27:329-341"
+   },
+   {
+    "name": "Rollins (2009)",
+    "role": "LANDFIRE fuel + canopy methodology",
+    "venue": "International Journal of Wildland Fire 18:235-249"
+   },
+   {
+    "name": "Scawthorn et al. (2006, I & II)",
+    "role": "HAZUS flood loss methodology",
+    "venue": "Natural Hazards Review 7(2):60-71 and 72-81"
+   }
+  ],
+  "criteria_count": 10,
+  "scored_count": 10,
+  "exclusion_count": 0,
+  "criteria": [
+   {
+    "criterion_id": "wf_likelihood",
+    "criterion_name": "Wildfire Likelihood (Burn Probability)",
+    "criterion_type": "scored",
+    "weight_default": 0.35,
+    "weight_range": [
+     0.3,
+     0.45
+    ],
+    "weight_rationale": "Primary hazard signal; the foundation Heavi consumes.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "usfs_fsim",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Simulated annual burn probability at 270m from tens of thousands of fire-season simulations."
+     },
+     {
+      "source_id": "nifc_fire_perimeters",
+      "relationship": "alternative",
+      "quality": "proxy",
+      "provides": "Historical fire frequency near the location (perimeters through 2024). Computed as fire_count / years_of_record."
+     }
+    ]
+   },
+   {
+    "criterion_id": "fl_depth",
+    "criterion_name": "Flood Depth Estimation",
+    "criterion_type": "scored",
+    "weight_default": 0.3,
+    "weight_range": [
+     0.25,
+     0.4
+    ],
+    "weight_rationale": "Depth at structure drives damage; multi-source computation = BFE \u2212 ground \u2212 FFH.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "fema_nfhl",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "provides BFE for depth computation"
+     },
+     {
+      "source_id": "usgs_3dep",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "provides ground elevation for depth = BFE \u2212 ground \u2212 FFH"
+     },
+     {
+      "source_id": "usace_nsi",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "provides first floor height for depth computation"
+     },
+     {
+      "source_id": "google_inundation_history",
+      "relationship": "supplementary",
+      "quality": "supplementary",
+      "provides": "corroborates or contradicts NFHL-based estimate"
+     }
+    ]
+   },
+   {
+    "criterion_id": "fl_zone",
+    "criterion_name": "Flood Zone (Regulatory)",
+    "criterion_type": "scored",
+    "weight_default": 0.3,
+    "weight_range": [
+     0.25,
+     0.4
+    ],
+    "weight_rationale": "Regulatory zone is the foundation of US flood risk assessment.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "fema_nfhl",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Flood zone (A, AE, V, VE, X, D), BFE where published"
+     }
+    ]
+   },
+   {
+    "criterion_id": "wf_fuel_proximity",
+    "criterion_name": "Distance to Burnable Fuel",
+    "criterion_type": "scored",
+    "weight_default": 0.2,
+    "weight_range": [
+     0.15,
+     0.25
+    ],
+    "weight_rationale": "Coffey Park pattern: urban-distant structures still vulnerable via structure-to-structure cascades (Kramer 2018).",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "landfire_fuels_canopy",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Pre-loaded LANDFIRE raster: FBFM40 fuel model classification. Distance to nearest burnable fuel computed at 30m."
+     },
+     {
+      "source_id": "landfire_wcs_fuel",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Same LANDFIRE fuel-model data queried on-demand at any CONUS coordinate. Returns the FBFM40 value at the point."
+     }
+    ]
+   },
+   {
+    "criterion_id": "wf_structure",
+    "criterion_name": "Building Characteristics",
+    "criterion_type": "scored",
+    "weight_default": 0.2,
+    "weight_range": [
+     0.15,
+     0.25
+    ],
+    "weight_rationale": "Occupancy class and construction type drive vulnerability; NSI is the national structure inventory.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "usace_nsi",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Occupancy class, foundation, stories, replacement value"
+     }
+    ]
+   },
+   {
+    "criterion_id": "fl_historical",
+    "criterion_name": "Historical Flood Context",
+    "criterion_type": "scored",
+    "weight_default": 0.15,
+    "weight_range": [
+     0.1,
+     0.2
+    ],
+    "weight_rationale": "Observed disasters and NFIP claims ground the prediction in reality.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "openfema_disasters",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Disaster declarations by county + NFIP claims by zip code"
+     },
+     {
+      "source_id": "usgs_peak_flow",
+      "relationship": "alternative",
+      "quality": "fallback",
+      "provides": "Peak streamflow magnitude at nearest USGS gauge"
+     }
+    ]
+   },
+   {
+    "criterion_id": "fl_hydrology",
+    "criterion_name": "Hydrologic Context (Watershed + Discharge)",
+    "criterion_type": "scored",
+    "weight_default": 0.15,
+    "weight_range": [
+     0.1,
+     0.2
+    ],
+    "weight_rationale": "Watershed-level discharge predictions corroborate property-level estimates.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "google_grrr",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "AI-derived discharge at return periods for nearest river reach"
+     },
+     {
+      "source_id": "usgs_nhdplus",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "HUC-12 watershed + flowline + stream order for nearest waterway"
+     },
+     {
+      "source_id": "usgs_peak_flow",
+      "relationship": "supplementary",
+      "quality": "supplementary",
+      "provides": "gauge observations for return-period validation"
+     }
+    ]
+   },
+   {
+    "criterion_id": "wf_canopy",
+    "criterion_name": "Canopy Cover (Defensible Space)",
+    "criterion_type": "scored",
+    "weight_default": 0.15,
+    "weight_range": [
+     0.1,
+     0.2
+    ],
+    "weight_rationale": "Syphard et al. (2012) established canopy cover at 30/100/300 m buffers as significant predictors.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "landfire_fuels_canopy",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Pre-loaded LANDFIRE raster: canopy cover percentage at 30m. Multi-buffer analysis (30/100/300m) pre-computed."
+     },
+     {
+      "source_id": "landfire_wcs_canopy",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Same LANDFIRE canopy-cover data queried on-demand. Returns canopy cover percentage at a point. Single-point query \u2014 does not support the multi-buffer defensible-space computation."
+     },
+     {
+      "source_id": "nlcd_land_cover",
+      "relationship": "alternative",
+      "quality": "proxy",
+      "provides": "NLCD land-cover class as proxy for canopy: forest (41-43) high, shrub (52) moderate, grassland (71) low, developed/barren minimal."
+     }
+    ]
+   },
+   {
+    "criterion_id": "fl_building",
+    "criterion_name": "Building Damage Estimation",
+    "criterion_type": "scored",
+    "weight_default": 0.1,
+    "weight_range": [
+     0.05,
+     0.15
+    ],
+    "weight_rationale": "HAZUS DDFs translate depth into damage % by building type.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "hazus_ddfs",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "depth-damage curves by building type + foundation"
+     },
+     {
+      "source_id": "usace_nsi",
+      "relationship": "component",
+      "quality": "authoritative",
+      "provides": "building type + replacement value for dollar loss"
+     }
+    ]
+   },
+   {
+    "criterion_id": "wf_slope",
+    "criterion_name": "Terrain Slope (Fire Behavior)",
+    "criterion_type": "scored",
+    "weight_default": 0.1,
+    "weight_range": [
+     0.05,
+     0.15
+    ],
+    "weight_rationale": "Upslope fire spread is faster; slope amplifies fire behavior.",
+    "exclusion_threshold": null,
+    "exclusion_rationale": null,
+    "data_sources": [
+     {
+      "source_id": "usgs_3dep",
+      "relationship": "alternative",
+      "quality": "authoritative",
+      "provides": "Slope in degrees from 3DEP"
+     }
+    ]
+   }
+  ],
+  "academic_sources": [
+   {
+    "year": 2011,
+    "pages": "973-1000",
+    "title": "A simulation of probabilistic wildfire risk components for the continental United States",
+    "author": "Finney, M.A., McHugh, C.W., Grenfell, I.C., Riley, K.L., & Short, K.C.",
+    "volume": "25",
+    "finding": "FSim simulation framework producing the USFS hazard layer.",
+    "journal": "Stochastic Environmental Research and Risk Assessment"
+   },
+   {
+    "year": 2006,
+    "pages": "60-71",
+    "title": "HAZUS-MH Flood Loss Estimation Methodology. I: Overview and Flood Hazard Characterization",
+    "author": "Scawthorn, C., et al.",
+    "volume": "7",
+    "finding": "Foundational HAZUS flood loss methodology.",
+    "journal": "Natural Hazards Review"
+   },
+   {
+    "year": 2006,
+    "pages": "72-81",
+    "title": "HAZUS-MH Flood Loss Estimation Methodology. II: Damage and Loss Assessment",
+    "author": "Scawthorn, C., et al.",
+    "volume": "7",
+    "finding": "Depth-damage function methodology.",
+    "journal": "Natural Hazards Review"
+   },
+   {
+    "year": 2018,
+    "pages": null,
+    "title": "The 3D Elevation Program\u2014Summary of Program Direction",
+    "author": "Gesch, D.B., Evans, G.A., Oimoen, M.J., & Arundel, S.",
+    "volume": null,
+    "finding": "3DEP 1/3 arc-second is the standard US elevation dataset.",
+    "journal": "USGS Fact Sheet 2018-3029"
+   },
+   {
+    "year": 2009,
+    "pages": "235-249",
+    "title": "LANDFIRE: a nationally consistent vegetation, wildland fire, and fuel assessment",
+    "author": "Rollins, M.G.",
+    "volume": "18",
+    "finding": "LANDFIRE fuel model + canopy cover methodology at 30 m national.",
+    "journal": "International Journal of Wildland Fire"
+   },
+   {
+    "year": 2018,
+    "pages": "329-341",
+    "title": "Where wildfires destroy buildings in the US relative to the wildland-urban interface",
+    "author": "Kramer, H.A., Mockrin, M.H., Alexandre, P.M., Stewart, S.I., & Radeloff, V.C.",
+    "volume": "27",
+    "finding": "Documents urban-distant structure loss; informs positive distance-to-fuel coefficient.",
+    "journal": "International Journal of Wildland Fire"
+   },
+   {
+    "year": 2012,
+    "pages": "e33954",
+    "title": "Housing arrangement and location determine the likelihood of housing loss due to wildfire",
+    "author": "Syphard, A.D., Brennan, T.J., & Keeley, J.E.",
+    "volume": "7",
+    "finding": "Establishes housing density + proximity to wildland as stronger predictors than fire behavior alone.",
+    "journal": "PLoS ONE"
+   }
+  ]
+ }
+}
