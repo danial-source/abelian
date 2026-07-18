@@ -217,6 +217,40 @@
     } catch (e) { if (bar) bar.textContent = "PDF failed \u2014 API unreachable"; }
   };
 
+  APP.exportPropertyPdf = async function (r, btn) {
+    if (btn.dataset.busy) return;
+    const original = btn.textContent;
+    btn.dataset.busy = "1";
+    btn.disabled = true;
+    btn.textContent = "Generating\u2026";
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 90000);
+    try {
+      const res = await fetch(APP.CONFIG.apiBase +
+        "/hazard/score-v2/pdf?lat=" + r.lat + "&lng=" + r.lng,
+        { signal: ctl.signal });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const blob = await res.blob();
+      const slug = String(r.p.property || "property").toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "hazard-assessment-" + slug + ".pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+      btn.textContent = original;
+    } catch (err) {
+      btn.textContent = "Export failed \u00b7 retry";
+      console.error("property PDF export:", err);
+    } finally {
+      clearTimeout(timer);
+      btn.disabled = false;
+      delete btn.dataset.busy;
+    }
+  };
+
   APP.summaryButtons = function () {
     return '<div class="stat" style="margin-left:auto;display:flex;gap:8px;align-items:center">' +
       '<span id="jobstatus" style="font-size:11px;color:var(--amber)"></span>' +
@@ -263,8 +297,7 @@
       const pb = e.target.closest("[data-ppdf]");
       if (pb) {
         const r = APP._m.rows.find(x => x.i === +pb.dataset.ppdf);
-        if (r) window.open(APP.CONFIG.apiBase + "/hazard/score-v2/pdf?lat=" +
-                           r.lat + "&lng=" + r.lng, "_blank");
+        if (r) APP.exportPropertyPdf(r, pb);
       }
       if (e.target.closest("[data-close]")) {
         document.getElementById("detail").classList.remove("open");
