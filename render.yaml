@@ -1,0 +1,26 @@
+# Render Blueprint for the internal Abelian demo API.
+# Place at the REPO ROOT of the felt-demo branch (Render looks for render.yaml
+# at the root, not in packages/api). Deploy via: Render dashboard → New →
+# Blueprint → select the fork + felt-demo branch. Only two values need manual
+# entry (both marked sync: false): DATABASE_URL and NREL_API_KEY.
+
+services:
+  - type: web
+    name: abelian-api-demo
+    runtime: python
+    region: oregon            # confirm Supabase project region and match
+    plan: starter             # $7/mo; free tier cold-starts ~60s+
+    branch: felt-demo
+    rootDir: packages/api
+    buildCommand: pip install -e .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"          # pyproject requires >=3.11
+      - key: ENABLE_RATE_LIMITS
+        value: "false"         # internal demo — no per-IP caps
+      - key: DATABASE_URL
+        sync: false            # paste Supabase PostGIS string in dashboard only
+      - key: NREL_API_KEY
+        sync: false            # fresh free key from developer.nrel.gov/signup
