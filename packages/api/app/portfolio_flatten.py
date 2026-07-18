@@ -57,7 +57,7 @@ def flatten_hazard(name: str, resp: dict) -> dict:
                           or "No structure matched"),
         "value_source": wf.get("nsi_source") or fl.get("nsi_source") or "N/A",
         "assessment_source": (
-            f"Abelian {resp.get('module_version', 'v1')} hazard module"),
+            f"Hazard analysis module {resp.get('module_version', 'v1')}"),
     }
     if wf.get("method") == "proxy_fallback":
         props["confidence_note"] = (
@@ -73,6 +73,10 @@ def flatten_hazard(name: str, resp: dict) -> dict:
     both = [v for v in (wf.get("annual_risk_usd"), fl.get("annual_risk_usd"))
             if v is not None]
     props["combined_annual_exposure"] = _usd(sum(both)) if both else "N/A"
+    rv = wf.get("nsi_replacement_value") or fl.get("nsi_replacement_value")
+    props["replacement_value_usd"] = rv
+    if both and rv:
+        props["exposure_pct_of_value"] = f"{sum(both) / rv * 100:.2f}%"
     return {k: v for k, v in props.items() if v is not None}
 
 
@@ -119,7 +123,8 @@ FSL_PORTFOLIO: dict = {
         "keyAttributes": [
             "wildfire_risk", "wildfire_annual_loss", "wildfire_damage_prob",
             "flood_risk", "flood_zone", "flood_annual_loss",
-            "combined_annual_exposure", "confidence",
+            "combined_annual_exposure", "exposure_pct_of_value",
+            "confidence",
             "replacement_value", "building_type", "value_source",
             "confidence_note", "data_gaps", "assessment_source",
         ],
@@ -132,6 +137,7 @@ FSL_PORTFOLIO: dict = {
         "flood_zone": {"displayName": "FEMA flood zone"},
         "flood_annual_loss": {"displayName": "Flood est. annual loss"},
         "combined_annual_exposure": {"displayName": "Combined annual exposure"},
+        "exposure_pct_of_value": {"displayName": "Exposure as % of replacement value"},
         "confidence": {"displayName": "Assessment confidence"},
         "replacement_value": {"displayName": "Replacement value"},
         "building_type": {"displayName": "Structure"},

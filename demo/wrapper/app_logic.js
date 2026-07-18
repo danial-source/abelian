@@ -118,6 +118,7 @@
         <div class="kv"><span class="k">Replacement value</span><span class="v">${val(p.replacement_value)}</span></div>
         <div class="kv"><span class="k">Structure</span><span class="v">${val(p.building_type)}</span></div>
         <div class="kv"><span class="k">Source</span><span class="v">${val(p.value_source)}</span></div>
+        <div class="kv"><span class="k">Combined EAL / value</span><span class="v">${val(p.exposure_pct_of_value)}</span></div>
       </div>
 
       ${p.confidence_note ? `<div class="callout"><span class="tag">CONFIDENCE NOTE</span><div>${val(p.confidence_note)}</div></div>` : ""}

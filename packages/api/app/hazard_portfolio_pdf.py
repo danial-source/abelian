@@ -40,6 +40,13 @@ S = {
 }
 
 
+def _pct_of_value(p: dict, usd_key: str) -> str | None:
+    rv, v = p.get("replacement_value_usd"), p.get(usd_key)
+    if not rv or v is None:
+        return None
+    return f"{v / rv * 100:.2f}% of replacement value"
+
+
 def _usd_or_dash(p: dict, key: str) -> str:
     v = p.get(key)
     return v if isinstance(v, str) and v not in ("", None) else "\u2014"
@@ -135,7 +142,7 @@ def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
             pass  # never fail the export over the cover image
     el.append(Spacer(1, 0.3 * inch))
     el.append(Paragraph(
-        f"Generated {datetime.utcnow():%B %d, %Y} \u00b7 Abelian hazard module "
+        f"Generated {datetime.utcnow():%B %d, %Y} \u00b7 Hazard analysis module "
         "\u00b7 Wildfire + flood perils reported separately \u00b7 Dollar "
         "estimates anchored to USACE National Structure Inventory replacement "
         "values", S["dim"]))
@@ -199,8 +206,10 @@ def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
             f"({round(f.get('acres', 0)):,} ac)"
             for f in fires[:8]) or "None on record at this location") \
             if isinstance(fires, list) else "\u2014"
+        wf_pct = _pct_of_value(p, "wildfire_annual_loss_usd")
         el.append(_kv_table([
-            ("Est. annual loss", _usd_or_dash(p, "wildfire_annual_loss")),
+            ("Est. annual loss", _usd_or_dash(p, "wildfire_annual_loss")
+             + (f" \u00b7 {wf_pct}" if wf_pct else "")),
             ("Damage probability", str(p.get("wildfire_damage_prob", "\u2014"))),
             ("Canopy cover", f"{p.get('canopy_cover_pct', '\u2014')}%"
              if p.get("canopy_cover_pct") is not None else "\u2014"),
@@ -210,8 +219,10 @@ def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
         el.append(Paragraph(
             f"Flood \u2014 <font color='{TIER.get(p.get('flood_risk'), GREY).hexval()}'>"
             f"{p.get('flood_risk', '\u2014')}</font>", S["h2"]))
+        fl_pct = _pct_of_value(p, "flood_annual_loss_usd")
         el.append(_kv_table([
-            ("Est. annual loss", _usd_or_dash(p, "flood_annual_loss")),
+            ("Est. annual loss", _usd_or_dash(p, "flood_annual_loss")
+             + (f" \u00b7 {fl_pct}" if fl_pct else "")),
             ("FEMA zone", str(p.get("flood_zone", "\u2014"))),
             ("In Special Flood Hazard Area", str(p.get("in_sfha", "\u2014"))),
             ("Return period", str(p.get("flood_return_period", "\u2014"))),
@@ -248,7 +259,9 @@ def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
         "figures are anchored to NSI replacement values; where no structure "
         "is matched, estimates are reported as N/A rather than defaulted. "
         "Per-criterion confidence and any data gaps are carried through to "
-        "this report verbatim.", S["body"]))
+        "this report verbatim. Risk tier breakpoints are platform calibration "
+        "constants chosen for cross-peril consistency, not literature-derived "
+        "values.", S["body"]))
     el.append(Spacer(1, 14))
     el.append(Paragraph("Disclaimer", S["h2"]))
     el.append(Paragraph(

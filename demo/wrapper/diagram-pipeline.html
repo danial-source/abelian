@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scoring pipeline, per property</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#09090b;display:flex;align-items:center;justify-content:center}
+  svg{width:min(100vw,1400px);aspect-ratio:16/9;height:auto;display:block}
+  .eyebrow{font:500 13px 'IBM Plex Mono',monospace;letter-spacing:2.4px;fill:#f59e0b}
+  .title{font:700 34px 'Space Grotesk',sans-serif;fill:#fafafa}
+  .boxtitle{font:700 15px 'Space Grotesk',sans-serif;fill:#fafafa}
+  .boxtitle.amber{fill:#f59e0b}
+  .body{font:400 12px 'IBM Plex Mono',monospace;fill:#a1a1aa}
+  .dim{font:400 11px 'IBM Plex Mono',monospace;fill:#71717a}
+  .tag{font:500 10px 'IBM Plex Mono',monospace;letter-spacing:1.2px}
+  .box{fill:#18181b;stroke:#3f3f46;rx:10}
+  .subtle{fill:#0f0f11;stroke:#27272a;rx:10}
+  .flow{stroke:#f59e0b;stroke-width:1.6;fill:none}
+  .flowdim{stroke:#3f3f46;stroke-width:1.4;fill:none;stroke-dasharray:4 4}
+</style>
+</head>
+<body>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Per-property scoring pipeline: input, source selection, parallel wildfire and flood tracks anchored to federal structure data, governed output">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#3f3f46"/>
+    </marker>
+  </defs>
+
+  <text x="56" y="64" class="eyebrow">METHODOLOGY IN MOTION</text>
+  <text x="56" y="104" class="title">One property through the pipeline</text>
+
+  <!-- INPUT -->
+  <rect x="56" y="300" width="168" height="120" class="box"/>
+  <text x="76" y="330" class="boxtitle">Input</text>
+  <text x="76" y="356" class="body">coordinates,</text>
+  <text x="76" y="374" class="body">or address</text>
+  <text x="76" y="392" class="dim">geocoded on intake</text>
+
+  <!-- SELECTION ENGINE -->
+  <rect x="286" y="272" width="252" height="176" class="box"/>
+  <text x="306" y="302" class="boxtitle">Source selection</text>
+  <text x="306" y="328" class="body">per criterion: best</text>
+  <text x="306" y="346" class="body">available source,</text>
+  <text x="306" y="364" class="body">quality-ordered</text>
+  <text x="306" y="382" class="body">fallbacks</text>
+  <text x="306" y="410" class="dim">31 registered sources</text>
+  <text x="306" y="428" class="dim">verdict travels with the result</text>
+
+  <!-- WILDFIRE TRACK -->
+  <rect x="600" y="150" width="420" height="160" class="box"/>
+  <text x="620" y="180" class="boxtitle amber">WILDFIRE</text>
+  <text x="620" y="208" class="body">NIFC fire history: frequency at the point</text>
+  <text x="620" y="228" class="body">LANDFIRE fuel model + canopy: damage factors</text>
+  <text x="620" y="248" class="body">validated loss model where features are</text>
+  <text x="620" y="268" class="body">pre-loaded; labeled proxy everywhere else</text>
+  <text x="620" y="292" class="dim">proxy outputs say so, verbatim, downstream</text>
+
+  <!-- FLOOD TRACK -->
+  <rect x="600" y="340" width="420" height="160" class="box"/>
+  <text x="620" y="370" class="boxtitle amber">FLOOD</text>
+  <text x="620" y="398" class="body">FEMA NFHL: zone, SFHA flag, return period</text>
+  <text x="620" y="418" class="body">USGS 3DEP ground elevation vs base flood</text>
+  <text x="620" y="438" class="body">elevation: water depth</text>
+  <text x="620" y="458" class="body">HAZUS depth-damage by occupancy class</text>
+  <text x="620" y="482" class="dim">structural + contents loss, per event and annualized</text>
+
+  <!-- NSI ANCHOR -->
+  <rect x="600" y="536" width="420" height="88" class="subtle"/>
+  <text x="620" y="566" class="boxtitle">USACE National Structure Inventory</text>
+  <text x="620" y="590" class="body">replacement value · building type · first-floor height</text>
+  <text x="620" y="610" class="dim">every dollar figure anchors here; no structure, no number</text>
+
+  <!-- OUTPUT -->
+  <rect x="1080" y="272" width="160" height="176" class="box"/>
+  <text x="1100" y="302" class="boxtitle">Output</text>
+  <text x="1100" y="328" class="body">$/yr per peril</text>
+  <text x="1100" y="346" class="body">risk tier</text>
+  <text x="1100" y="364" class="body">confidence +</text>
+  <text x="1100" y="382" class="body">named gaps</text>
+  <text x="1100" y="410" class="dim">perils reported</text>
+  <text x="1100" y="426" class="dim">separately, never</text>
+  <text x="1100" y="442" class="dim">blended</text>
+
+  <!-- FLOWS -->
+  <line x1="224" y1="360" x2="278" y2="360" class="flow" marker-end="url(#a)"/>
+  <path d="M 538 330 C 566 330 572 250 592 240" class="flow" marker-end="url(#a)"/>
+  <path d="M 538 390 C 566 390 572 410 592 418" class="flow" marker-end="url(#a)"/>
+  <path d="M 1020 230 C 1052 230 1056 310 1072 320" class="flow" marker-end="url(#a)"/>
+  <path d="M 1020 420 C 1052 420 1056 400 1072 396" class="flow" marker-end="url(#a)"/>
+  <line x1="810" y1="528" x2="810" y2="508" class="flowdim" marker-end="url(#g)"/>
+  <line x1="900" y1="536" x2="900" y2="318" class="flowdim" marker-end="url(#g)"/>
+
+  <!-- footnote -->
+  <text x="56" y="668" class="dim">Tiers from annual expected loss: HIGH over $500/yr · MODERATE $50 to $500 · LOW under $50 · CANNOT ASSESS when usable sources are exhausted</text>
+</svg>
+</body>
+</html>

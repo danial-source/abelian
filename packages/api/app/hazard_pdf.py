@@ -72,6 +72,9 @@ def _peril_section(st: dict, title: str, peril: dict[str, Any], extra: list) -> 
     tier = peril.get("risk_tier")
     na = peril.get("nsi_available") is False
     dollar = NSI_NA if na else _money(peril.get("annual_risk_usd"))
+    rv, ar = peril.get("nsi_replacement_value"), peril.get("annual_risk_usd")
+    if not na and rv and ar is not None:
+        dollar += f" \u00b7 {ar / rv * 100:.2f}% of replacement value"
     color = _RISK_COLOR.get((tier or "").upper(), NAVY)
     story.append(_kpi_card(st, "ANNUAL RISK", dollar, f"{tier or '—'} risk", color))
     story.append(Spacer(1, 4))
@@ -133,6 +136,8 @@ def hazard_single_pdf(r: dict[str, Any], address: str | None = None) -> bytes:
     # Provenance / disclaimer
     story.append(Spacer(1, 8))
     story.append(Paragraph(
+        "Risk tier breakpoints are platform calibration constants chosen for "
+        "cross-peril consistency, not literature-derived values. "
         "Replacement values are sourced from the USACE National Structure Inventory (NSI). "
         "Where NSI matches no structure at the location, the dollar estimate is reported as "
         "N/A rather than valued against a default. This assessment is for screening and does "

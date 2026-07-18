@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The system at runtime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#09090b;display:flex;align-items:center;justify-content:center}
+  svg{width:min(100vw,1400px);aspect-ratio:16/9;height:auto;display:block}
+  .eyebrow{font:500 13px 'IBM Plex Mono',monospace;letter-spacing:2.4px;fill:#f59e0b}
+  .title{font:700 34px 'Space Grotesk',sans-serif;fill:#fafafa}
+  .boxtitle{font:700 15px 'Space Grotesk',sans-serif;fill:#fafafa}
+  .body{font:400 12px 'IBM Plex Mono',monospace;fill:#a1a1aa}
+  .dim{font:400 11px 'IBM Plex Mono',monospace;fill:#71717a}
+  .box{fill:#18181b;stroke:#3f3f46;rx:10}
+  .subtle{fill:#0f0f11;stroke:#27272a;rx:10}
+  .ghost{fill:none;stroke:#f59e0b;stroke-dasharray:5 5;rx:10;opacity:.55}
+  .flow{stroke:#f59e0b;stroke-width:1.6;fill:none}
+  .flow2{stroke:#71717a;stroke-width:1.4;fill:none}
+</style>
+</head>
+<body>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Runtime system: portfolio intake, async scoring job, data plane of pre-loaded and live federal sources, governed outputs handed to the delivery layer">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#71717a"/>
+    </marker>
+  </defs>
+
+  <text x="56" y="64" class="eyebrow">THE SYSTEM AT RUNTIME</text>
+  <text x="56" y="104" class="title">A portfolio through the stack</text>
+
+  <!-- INTAKE -->
+  <rect x="56" y="180" width="248" height="180" class="box"/>
+  <text x="76" y="210" class="boxtitle">Intake + validation</text>
+  <text x="76" y="238" class="body">CSV: names + coordinates,</text>
+  <text x="76" y="256" class="body">or addresses (geocoded)</text>
+  <text x="76" y="282" class="body">50-row cap · continental US</text>
+  <text x="76" y="300" class="body">duplicates rejected</text>
+  <text x="76" y="326" class="dim">plain-English 400s before</text>
+  <text x="76" y="342" class="dim">anything runs</text>
+
+  <!-- JOB -->
+  <rect x="364" y="180" width="248" height="180" class="box"/>
+  <text x="384" y="210" class="boxtitle">Async scoring job</text>
+  <text x="384" y="238" class="body">job_id returned at once;</text>
+  <text x="384" y="256" class="body">client polls for progress</text>
+  <text x="384" y="282" class="body">5 properties in flight,</text>
+  <text x="384" y="300" class="body">polite to federal services</text>
+  <text x="384" y="326" class="dim">per-row failures land in an</text>
+  <text x="384" y="342" class="dim">errors list, never kill the batch</text>
+
+  <!-- ENGINE -->
+  <rect x="672" y="180" width="248" height="180" class="box"/>
+  <text x="692" y="210" class="boxtitle">Analysis engine</text>
+  <text x="692" y="238" class="body">wildfire + flood per</text>
+  <text x="692" y="256" class="body">property · dollar exposure</text>
+  <text x="692" y="282" class="body">confidence + gaps attached</text>
+  <text x="692" y="300" class="body">to every result</text>
+  <text x="692" y="326" class="dim">flattens to one schema shared</text>
+  <text x="692" y="342" class="dim">by map, app, and report</text>
+
+  <!-- OUTPUTS -->
+  <rect x="980" y="152" width="244" height="108" class="box"/>
+  <text x="1000" y="182" class="boxtitle">Styled map layer</text>
+  <text x="1000" y="208" class="body">risk-tiered GeoJSON,</text>
+  <text x="1000" y="226" class="body">popup carries provenance</text>
+
+  <rect x="980" y="288" width="244" height="108" class="box"/>
+  <text x="1000" y="318" class="boxtitle">PDF report</text>
+  <text x="1000" y="344" class="body">ranked exposure table,</text>
+  <text x="1000" y="362" class="body">a page per property</text>
+
+  <!-- DELIVERY GHOST -->
+  <rect x="980" y="430" width="244" height="64" class="ghost"/>
+  <text x="1000" y="456" class="boxtitle" fill="#f59e0b">Delivery: Felt</text>
+  <text x="1000" y="478" class="dim">collaboration layer, own deck</text>
+
+  <!-- DATA PLANE -->
+  <rect x="364" y="470" width="556 " height="170" class="subtle"/>
+  <text x="384" y="500" class="boxtitle">Data plane</text>
+  <text x="384" y="528" class="body">Pre-loaded regional features in PostGIS:</text>
+  <text x="384" y="546" class="body">burn probability, fuel, terrain, structures</text>
+  <text x="384" y="574" class="body">Live federal queries everywhere else:</text>
+  <text x="384" y="592" class="body">FEMA · USGS · USACE · NIFC · LANDFIRE · more</text>
+  <text x="384" y="618" class="dim">31 registered sources, quality-ordered fallbacks per criterion</text>
+
+  <!-- FLOWS -->
+  <line x1="304" y1="270" x2="356" y2="270" class="flow" marker-end="url(#a)"/>
+  <line x1="612" y1="270" x2="664" y2="270" class="flow" marker-end="url(#a)"/>
+  <path d="M 920 240 C 952 240 956 210 972 206" class="flow" marker-end="url(#a)"/>
+  <path d="M 920 300 C 952 300 956 330 972 336" class="flow" marker-end="url(#a)"/>
+  <path d="M 1102 260 L 1102 280" class="flow" marker-end="url(#a)"/>
+  <path d="M 1102 396 L 1102 422" class="flow" marker-end="url(#a)"/>
+  <path d="M 796 360 L 796 462" class="flow2" marker-end="url(#d)"/>
+  <path d="M 760 462 L 760 360" class="flow2" marker-end="url(#d)"/>
+
+  <!-- timing -->
+  <text x="56" y="668" class="dim">Measured end to end on the deployed stack, including the map publish: 3 properties in 39s · 20 properties in 69s</text>
+</svg>
+</body>
+</html>
