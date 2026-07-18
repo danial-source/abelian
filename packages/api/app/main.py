@@ -39,6 +39,8 @@ from .methodology_repository import (
     get_methodology_doc,
 )
 from .portfolio_pdf import render_pdf
+from . import portfolio_analyze
+from .hazard_portfolio_pdf import render_hazard_portfolio_pdf
 from .portfolio_risk import (
     MAX_ROWS,
     get_job,
@@ -985,3 +987,70 @@ async def portfolio_sample_endpoint() -> Response:
     raise HTTPException(
         404, f"sample_portfolio.csv not found. Tried:\n  {tried}"
     )
+
+
+# ─── Portfolio hazard pipeline (upload → score → Felt → PDF) ───────────────
+
+
+@app.post("/portfolio/analyze")
+async def portfolio_analyze_endpoint(
+    file: UploadFile = File(...),
+    portfolio_name: str = Form("Untitled Portfolio"),
+) -> dict:
+    """Upload a portfolio CSV (name+latitude+longitude, or address), score
+    every property through the v2 hazard pipeline concurrently, publish a
+    styled Felt map, and return a job_id to poll. Validation problems return
+    400 immediately; scoring runs in the background."""
+    if not pool:
+        raise HTTPException(503, "Database pool not initialized")
+    if not os.getenv("FELT_API_TOKEN"):
+        raise HTTPException(503, "FELT_API_TOKEN not configured on the server")
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "Empty upload")
+    if len(raw) > 2 * 1024 * 1024:
+        raise HTTPException(413, "CSV exceeds 2 MB.")
+    try:
+        return portfolio_analyze.start_job(pool, raw, portfolio_name)
+    except portfolio_analyze.PortfolioValidationError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.get("/portfolio/analyze/{job_id}")
+async def portfolio_analyze_status(job_id: str) -> dict:
+    """Poll an analysis job: {status, progress:{done,total}, errors[],
+    result?} where result carries felt_map_url, felt_map_id, geojson, and
+    the summary strip numbers."""
+    out = portfolio_analyze.job_status(job_id)
+    if out is None:
+        raise HTTPException(404, f"No analysis job {job_id}")
+    return out
+
+
+class PortfolioPdfRequest(BaseModel):
+    job_id: str | None = None
+    geojson: dict | None = None
+    portfolio_name: str = "Portfolio"
+
+
+@app.post("/portfolio/pdf")
+async def portfolio_pdf_endpoint(req: PortfolioPdfRequest) -> Response:
+    """Portfolio summary PDF from a completed job_id or a raw GeoJSON body:
+    cover + KPI strip, exposure-ranked table, per-property detail pages,
+    methodology and disclaimer."""
+    geojson, name, summary = req.geojson, req.portfolio_name, None
+    if req.job_id:
+        st = portfolio_analyze.job_status(req.job_id)
+        if not st or st.get("status") != "complete":
+            raise HTTPException(
+                404, f"Job {req.job_id} not found or not complete")
+        geojson = st["result"]["geojson"]
+        summary = st["result"]["summary"]
+        name = st["result"].get("portfolio_name") or name
+    if not geojson or not geojson.get("features"):
+        raise HTTPException(400, "Provide job_id or a GeoJSON body")
+    pdf = render_hazard_portfolio_pdf(geojson, name, summary)
+    return Response(
+        content=pdf, media_type="application/pdf",
+        headers={"Content-Disposition":
+                 'attachment; filename="portfolio-hazard-review.pdf"'})
