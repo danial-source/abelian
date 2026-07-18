@@ -171,6 +171,9 @@
         setStatus("Done \u2014 " + st.result.summary.property_count + " properties scored" +
                   (errs ? " (" + errs + " row" + (errs > 1 ? "s" : "") + " errored: " +
                    st.result.errors.map(e => e.property).join(", ") + ")" : ""));
+        APP.store.save({ title: name, feltMapId: st.result.felt_map_id,
+          feltMapUrl: st.result.felt_map_url, geojson: st.result.geojson,
+          savedAt: Date.now() });
         APP.loadPortfolio(st.result, name);
         return;
       }
@@ -183,9 +186,9 @@
     APP.CONFIG.feltMapUrl = result.felt_map_url;
     APP.GEOJSON = result.geojson;
     APP._m = APP.model(APP.GEOJSON);
-    document.getElementById("ptitle").textContent = "\u2014 " + name;
+    APP.renderSwitcher();
     document.getElementById("summary").innerHTML =
-      APP.renderSummary(APP._m) + APP.summaryButtons();
+      APP.renderSummary(APP._m);
     document.getElementById("list").innerHTML =
       APP._m.rows.map(r => APP.renderRow(r, false)).join("");
     document.getElementById("detail").classList.remove("open");
@@ -250,22 +253,91 @@
     }
   };
 
-  APP.summaryButtons = function () {
-    return '<div class="stat" style="margin-left:auto;display:flex;gap:8px;align-items:center">' +
-      '<span id="jobstatus" style="font-size:11px;color:var(--amber)"></span>' +
-      '<button class="btn" id="btn-new">New portfolio</button>' +
-      '<button class="btn" id="btn-pdf">Export PDF</button>' +
-      '<a class="btn" id="feltlink" target="_blank" href="https://felt.com/map/' +
-      APP.CONFIG.feltMapId + '">Open in Felt</a></div>';
+  // ── Portfolio registry (uploads persist across refresh) ─────────────────
+  APP.store = {
+    key: "phr:portfolios",
+    list() {
+      try { return JSON.parse(localStorage.getItem(this.key)) || []; }
+      catch (e) { return []; }
+    },
+    save(entry) {
+      try {
+        const l = this.list().filter(p => p.feltMapId !== entry.feltMapId);
+        l.push(entry);
+        localStorage.setItem(this.key, JSON.stringify(l));
+      } catch (e) { console.warn("portfolio not persisted:", e); }
+    },
   };
+
+  APP.portfolios = function () {
+    return [APP.BUILTIN, ...APP.store.list()];
+  };
+
+  APP.renderSwitcher = function () {
+    const label = document.getElementById("pswitch-label");
+    if (label) label.textContent = APP.CONFIG.title;
+    const menu = document.getElementById("pmenu");
+    if (!menu) return;
+    const items = APP.portfolios().map(p => {
+      const cur = p.feltMapId === APP.CONFIG.feltMapId;
+      const n = p.geojson && p.geojson.features ? p.geojson.features.length : "";
+      return '<div class="item' + (cur ? " current" : "") +
+        '" data-pid="' + p.feltMapId + '" role="option"' +
+        (cur ? ' aria-selected="true"' : "") + '>' +
+        '<span>' + String(p.title).replace(/[<>&]/g, "") + '</span>' +
+        (n ? '<span class="meta">' + n + " properties</span>" : "") + "</div>";
+    }).join("");
+    menu.innerHTML = items +
+      '<div class="divider"></div>' +
+      '<div class="item" data-newp="1">New portfolio\u2026</div>';
+  };
+
+  APP.switchTo = function (feltMapId) {
+    const p = APP.portfolios().find(x => x.feltMapId === feltMapId);
+    if (!p || !p.geojson) return;
+    APP.loadPortfolio({ felt_map_id: p.feltMapId, felt_map_url: p.feltMapUrl,
+                        geojson: p.geojson }, p.title);
+  };
+
 
   // ── Browser wiring ───────────────────────────────────────────────────────
   APP.boot = function () {
     const m = APP.model(APP.GEOJSON);
     APP._m = m;
-    document.getElementById("ptitle").textContent = "\u2014 " + APP.CONFIG.title;
+    APP.BUILTIN = { title: APP.CONFIG.title, feltMapId: APP.CONFIG.feltMapId,
+      feltMapUrl: APP.CONFIG.feltMapUrl, geojson: APP.GEOJSON, builtin: true };
+    APP.renderSwitcher();
+    const fl = document.getElementById("feltlink");
+    if (fl) fl.href = APP.CONFIG.feltMapUrl;
+    const sw = document.getElementById("pswitch");
+    const menu = document.getElementById("pmenu");
+    sw.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle("open");
+      sw.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    menu.addEventListener("click", (e) => {
+      const item = e.target.closest(".item");
+      if (!item) return;
+      menu.classList.remove("open");
+      sw.setAttribute("aria-expanded", "false");
+      if (item.dataset.newp) {
+        const dlg = document.getElementById("uploadform");
+        if (dlg) dlg.classList.add("open");
+      } else if (item.dataset.pid && item.dataset.pid !== APP.CONFIG.feltMapId) {
+        APP.switchTo(item.dataset.pid);
+      }
+    });
+    document.addEventListener("click", () => {
+      menu.classList.remove("open");
+      sw.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { menu.classList.remove("open");
+        sw.setAttribute("aria-expanded", "false"); }
+    });
     document.getElementById("summary").innerHTML =
-      APP.renderSummary(m) + APP.summaryButtons();
+      APP.renderSummary(m);
     console.log("summary hand-check:", { properties: m.count, highWildfire: m.highWf,
       floodExposed: m.floodExposed, combined: Math.round(m.totalExposure) });
     const list = document.getElementById("list");
@@ -274,12 +346,10 @@
       const row = e.target.closest(".row");
       if (row) APP.select(+row.dataset.i, true);
     });
-    document.getElementById("summary").addEventListener("click", (e) => {
-      if (e.target.id === "btn-pdf") APP.exportPdf();
-      if (e.target.id === "btn-new") {
-        const dlg = document.getElementById("uploadform");
-        if (dlg) dlg.classList.toggle("open");
-      }
+    document.getElementById("btn-pdf").addEventListener("click", APP.exportPdf);
+    document.getElementById("btn-new").addEventListener("click", () => {
+      const dlg = document.getElementById("uploadform");
+      if (dlg) dlg.classList.toggle("open");
     });
     const uf = document.getElementById("uploadform");
     if (uf) uf.addEventListener("submit", (e) => {
