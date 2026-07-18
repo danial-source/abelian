@@ -53,3 +53,24 @@
   + the federal dataset loading pipeline (scripts in repo) as a real data-eng task.
 - Tokens used this cycle (GitHub classic PAT, Render key, Felt PAT) should be
   rotated when the demo cycle closes.
+
+
+## v1 product loop (added after the wrapper upgrade)
+- **POST /portfolio/analyze** is async (job_id + poll) with concurrency 5.
+  Measured: 3 rows ≈ 39s, 20 rows ≈ 69s end-to-end including Felt publish.
+  Jobs are process-memory with 2h TTL — single instance only; a restart
+  drops in-flight jobs. Productizing needs a real queue (or at least Redis).
+- **Map-per-portfolio, by design**: row-level layer updates require
+  Enterprise Live Data refresh or a full layer re-upload, so each analysis
+  publishes a fresh governed map. Consequence: maps accumulate (cleanup
+  policy needed) and comments don't carry across re-scores of the same
+  portfolio. The alternative (one map, re-uploaded layer) would preserve the
+  map URL but sever feature-anchored comments on every update anyway.
+- **Felt API limits encountered**: none at this scale (19-feature GeoJSON,
+  ~40KB uploads, layer processing 15-30s). The 1MB POST cap only binds the
+  elements API, not file uploads; the 5GB file cap is far away.
+- **FELT_API_TOKEN lives in Render env only**; verified absent from all
+  client-side code and responses. CORS pinned to the Vercel origin.
+- **Geocode failures are per-row, not fatal** (errors[] in the job result);
+  Nominatim fallback respects 1 req/s so address-heavy CSVs are slow —
+  MAPBOX_TOKEN on Render would lift that.
