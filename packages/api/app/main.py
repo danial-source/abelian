@@ -87,7 +87,13 @@ def _client_ip(request: Request) -> str:
     return get_remote_address(request)
 
 
-limiter = Limiter(key_func=_client_ip, default_limits=["30/hour"])
+# ENABLE_RATE_LIMITS=false disables all per-IP limits (internal demo
+# deployments only). Default true preserves public-demo behavior.
+limiter = Limiter(
+    key_func=_client_ip,
+    default_limits=["30/hour"],
+    enabled=os.getenv("ENABLE_RATE_LIMITS", "true").strip().lower() == "true",
+)
 app.state.limiter = limiter
 
 
