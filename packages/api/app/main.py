@@ -1031,6 +1031,32 @@ class PortfolioPdfRequest(BaseModel):
     job_id: str | None = None
     geojson: dict | None = None
     portfolio_name: str = "Portfolio"
+    felt_map_id: str | None = None
+    felt_map_url: str | None = None
+
+
+async def _fetch_map_snapshot(map_id: str) -> bytes | None:
+    """Felt's map thumbnail (the platform's own render of the styled map).
+    There is no viewport-parameterized static-image endpoint in the REST API,
+    so the auto-framed thumbnail is the snapshot source. Any failure within
+    the 5s budget degrades to a cover without the image."""
+    token = os.getenv("FELT_API_TOKEN")
+    if not (token and map_id):
+        return None
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            m = await client.get(
+                f"https://felt.com/api/v2/maps/{map_id}",
+                headers={"Authorization": f"Bearer {token}"})
+            m.raise_for_status()
+            th = m.json().get("thumbnail_url")
+            if not th:
+                return None
+            img = await client.get(th)
+            img.raise_for_status()
+            return img.content
+    except Exception:                              # noqa: BLE001
+        return None
 
 
 @app.post("/portfolio/pdf")
@@ -1039,6 +1065,7 @@ async def portfolio_pdf_endpoint(req: PortfolioPdfRequest) -> Response:
     cover + KPI strip, exposure-ranked table, per-property detail pages,
     methodology and disclaimer."""
     geojson, name, summary = req.geojson, req.portfolio_name, None
+    map_id, map_url = req.felt_map_id, req.felt_map_url
     if req.job_id:
         st = portfolio_analyze.job_status(req.job_id)
         if not st or st.get("status") != "complete":
@@ -1046,10 +1073,14 @@ async def portfolio_pdf_endpoint(req: PortfolioPdfRequest) -> Response:
                 404, f"Job {req.job_id} not found or not complete")
         geojson = st["result"]["geojson"]
         summary = st["result"]["summary"]
-        name = st["result"].get("portfolio_name") or name
+        map_id = map_id or st["result"].get("felt_map_id")
+        map_url = map_url or st["result"].get("felt_map_url")
     if not geojson or not geojson.get("features"):
         raise HTTPException(400, "Provide job_id or a GeoJSON body")
-    pdf = render_hazard_portfolio_pdf(geojson, name, summary)
+    snapshot = await _fetch_map_snapshot(map_id) if map_id else None
+    pdf = render_hazard_portfolio_pdf(geojson, name, summary,
+                                      snapshot=snapshot,
+                                      felt_map_url=map_url)
     return Response(
         content=pdf, media_type="application/pdf",
         headers={"Content-Disposition":

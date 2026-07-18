@@ -11,6 +11,7 @@
     title: "North Bay Properties",
     feltMapId: "UfY5hIcFSimAypc8UNlkoB",
     apiBase: "https://abelian-api-demo.onrender.com",
+    feltMapUrl: "https://felt.com/map/Portfolio-Hazard-Review-North-Bay-Properties-UfY5hIcFSimAypc8UNlkoB",
   };
   APP.SAMPLE_CSV = "name,latitude,longitude\n" +
     "1275 Fountaingrove Pkwy Santa Rosa,38.4405,-122.7141\n" +
@@ -180,6 +181,7 @@
   APP.loadPortfolio = function (result, name) {
     APP.CONFIG.title = name;
     APP.CONFIG.feltMapId = result.felt_map_id;
+    APP.CONFIG.feltMapUrl = result.felt_map_url;
     APP.GEOJSON = result.geojson;
     APP._m = APP.model(APP.GEOJSON);
     document.getElementById("ptitle").textContent = "\u2014 " + name;
@@ -200,7 +202,9 @@
       const r = await fetch(APP.CONFIG.apiBase + "/portfolio/pdf", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ geojson: APP.GEOJSON,
-                               portfolio_name: APP.CONFIG.title }),
+                               portfolio_name: APP.CONFIG.title,
+                               felt_map_id: APP.CONFIG.feltMapId,
+                               felt_map_url: APP.CONFIG.feltMapUrl }),
       });
       if (!r.ok) { if (bar) bar.textContent = "PDF failed (" + r.status + ")"; return; }
       const blob = await r.blob();

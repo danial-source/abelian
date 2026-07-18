@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import (
-    PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle)
+    Image, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle)
 
 NAVY = colors.HexColor("#0f172a")
 ACCENT = colors.HexColor("#2563eb")
@@ -63,7 +63,9 @@ def _kv_table(pairs: list[tuple[str, str]], width: float) -> Table:
 
 
 def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
-                                summary: dict | None = None) -> bytes:
+                                summary: dict | None = None,
+                                snapshot: bytes | None = None,
+                                felt_map_url: str | None = None) -> bytes:
     feats = geojson.get("features", [])
     props = sorted((f["properties"] for f in feats),
                    key=_combined, reverse=True)
@@ -107,6 +109,30 @@ def render_hazard_portfolio_pdf(geojson: dict, portfolio_name: str,
         ("LEFTPADDING", (0, 0), (-1, -1), 12),
     ]))
     el.append(kpi)
+    if snapshot:
+        try:
+            img = Image(io.BytesIO(snapshot))
+            iw, ih = img.imageWidth, img.imageHeight
+            img.drawWidth = W
+            img.drawHeight = W * ih / iw
+            frame = Table([[img]], colWidths=[W])
+            frame.setStyle(TableStyle([
+                ("BOX", (0, 0), (-1, -1), 0.75, colors.HexColor("#cbd5e1")),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("TOPPADDING", (0, 0), (-1, -1), 0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ]))
+            el.append(Spacer(1, 0.25 * inch))
+            el.append(frame)
+            if felt_map_url:
+                el.append(Spacer(1, 4))
+                el.append(Paragraph(
+                    f'Live collaboration map: <link href="{felt_map_url}">'
+                    f'<font color="#2563eb"><u>{felt_map_url}</u></font></link>',
+                    S["dim"]))
+        except Exception:
+            pass  # never fail the export over the cover image
     el.append(Spacer(1, 0.3 * inch))
     el.append(Paragraph(
         f"Generated {datetime.utcnow():%B %d, %Y} \u00b7 Abelian hazard module "
