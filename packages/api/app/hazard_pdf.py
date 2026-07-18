@@ -22,6 +22,7 @@ from .solar_pdf import AMBER, GRAY, GREEN, MUTED, NAVY, RED, RULE, _kpi_card, _s
 
 # Hazard risk tiers invert the solar palette: HIGH risk is bad (red), LOW is good.
 _RISK_COLOR = {"HIGH": RED, "MODERATE": AMBER, "LOW": GREEN, "CANNOT ASSESS": GRAY}
+_EMDASH = "\u2014"
 NSI_NA = "N/A — no structure data available"
 
 
@@ -73,10 +74,11 @@ def _peril_section(st: dict, title: str, peril: dict[str, Any], extra: list) -> 
     na = peril.get("nsi_available") is False
     dollar = NSI_NA if na else _money(peril.get("annual_risk_usd"))
     rv, ar = peril.get("nsi_replacement_value"), peril.get("annual_risk_usd")
+    caption = f"{tier or _EMDASH} risk"
     if not na and rv and ar is not None:
-        dollar += f" \u00b7 {ar / rv * 100:.2f}% of replacement value"
+        caption += f" \u00b7 {ar / rv * 100:.2f}% of replacement value"
     color = _RISK_COLOR.get((tier or "").upper(), NAVY)
-    story.append(_kpi_card(st, "ANNUAL RISK", dollar, f"{tier or '—'} risk", color))
+    story.append(_kpi_card(st, "ANNUAL RISK", dollar, caption, color))
     story.append(Spacer(1, 4))
     story += _nsi_basis_line(st, peril)
     for line in extra:
