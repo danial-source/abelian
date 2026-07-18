@@ -102,7 +102,7 @@ def _chrome_factory(footer_label: str):
         w, h = LETTER
         canvas.setFillColor(NAVY)
         canvas.setFont("Helvetica-Bold", 9)
-        canvas.drawString(0.75 * inch, h - 0.55 * inch, "HEAVI ENERGY")
+        canvas.drawString(0.75 * inch, h - 0.55 * inch, "FELT")
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(MUTED)
         canvas.drawRightString(w - 0.75 * inch, h - 0.55 * inch, footer_label)
@@ -111,7 +111,7 @@ def _chrome_factory(footer_label: str):
         canvas.line(0.75 * inch, h - 0.62 * inch, w - 0.75 * inch, h - 0.62 * inch)
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(MUTED)
-        canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Heavi")
+        canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Felt")
         canvas.drawRightString(w - 0.75 * inch, 0.5 * inch, f"Page {doc.page}")
         canvas.restoreState()
     return _chrome
@@ -276,7 +276,7 @@ def markdown_to_pdf(md: str, footer_label: str = "Methodology Whitepaper",
         buf, pagesize=LETTER,
         leftMargin=0.75 * inch, rightMargin=0.75 * inch,
         topMargin=0.85 * inch, bottomMargin=0.75 * inch,
-        title="Heavi Energy — Methodology Whitepaper", author="Heavi Energy",
+        title="Felt — Methodology Whitepaper", author="Felt",
     )
     chrome = _chrome_factory(footer_label)
     doc.build(story, onFirstPage=chrome, onLaterPages=chrome)

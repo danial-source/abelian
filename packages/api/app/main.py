@@ -363,7 +363,7 @@ async def solar_score_v2_pdf(
     pdf = solar_single_pdf(result, address=address)
     return Response(
         content=pdf, media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="heavi-solar-{lat:.4f}_{lng:.4f}.pdf"'},
+        headers={"Content-Disposition": f'attachment; filename="felt-solar-{lat:.4f}_{lng:.4f}.pdf"'},
     )
 
 
@@ -389,7 +389,7 @@ async def solar_score_v2_batch_pdf(request: Request, req: SolarBatchRequest) -> 
     pdf = solar_batch_pdf(results)
     return Response(
         content=pdf, media_type="application/pdf",
-        headers={"Content-Disposition": 'attachment; filename="heavi-solar-portfolio.pdf"'},
+        headers={"Content-Disposition": 'attachment; filename="felt-solar-portfolio.pdf"'},
     )
 
 
@@ -801,7 +801,7 @@ async def hazard_score_v2_pdf(
     from .hazard_pdf import hazard_single_pdf
 
     pdf = hazard_single_pdf(result, address=address)
-    fname = f"heavi-hazard-{lat:.4f}_{lng:.4f}.pdf"
+    fname = f"felt-hazard-{lat:.4f}_{lng:.4f}.pdf"
     return Response(
         content=pdf, media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{fname}"'},

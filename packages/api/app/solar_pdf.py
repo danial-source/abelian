@@ -98,7 +98,7 @@ def _chrome(canvas: Any, doc: Any) -> None:
     w, h = LETTER
     canvas.setFillColor(NAVY)
     canvas.setFont("Helvetica-Bold", 9)
-    canvas.drawString(0.75 * inch, h - 0.55 * inch, "HEAVI ENERGY")
+    canvas.drawString(0.75 * inch, h - 0.55 * inch, "FELT")
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(MUTED)
     canvas.drawRightString(w - 0.75 * inch, h - 0.55 * inch, "Solar Site Suitability Assessment")
@@ -107,7 +107,7 @@ def _chrome(canvas: Any, doc: Any) -> None:
     canvas.line(0.75 * inch, h - 0.62 * inch, w - 0.75 * inch, h - 0.62 * inch)
     canvas.setFont("Helvetica", 7.5)
     canvas.setFillColor(MUTED)
-    canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Heavi")
+    canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Felt")
     canvas.drawRightString(w - 0.75 * inch, 0.5 * inch, f"Page {doc.page}")
     canvas.restoreState()
 
@@ -299,7 +299,7 @@ def _doc(buf: io.BytesIO) -> SimpleDocTemplate:
         buf, pagesize=LETTER,
         leftMargin=0.75 * inch, rightMargin=0.75 * inch,
         topMargin=0.85 * inch, bottomMargin=0.7 * inch,
-        title="Heavi Energy — Solar Site Suitability Assessment", author="Heavi",
+        title="Felt — Solar Site Suitability Assessment", author="Felt",
     )
 
 

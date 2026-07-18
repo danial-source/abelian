@@ -218,7 +218,7 @@ def _draw_chrome(canvas, doc):
     canvas.line(0.75 * inch, 10.3 * inch, 7.75 * inch, 10.3 * inch)
     canvas.setFillColor(NAVY)
     canvas.setFont("Helvetica-Bold", 9)
-    canvas.drawString(0.75 * inch, 10.45 * inch, "HEAVI")
+    canvas.drawString(0.75 * inch, 10.45 * inch, "FELT")
     canvas.setFillColor(MUTED)
     canvas.setFont("Helvetica", 9)
     canvas.drawString(1.20 * inch, 10.45 * inch, "·  Spatial decision intelligence")
@@ -512,7 +512,7 @@ def _page_cover(job: PortfolioJob, styles: dict[str, ParagraphStyle]) -> list[An
     )
     flowables.append(Paragraph(date_str, styles["subtitle"]))
     flowables.append(Spacer(1, 3.0 * inch))
-    flowables.append(Paragraph("Prepared by Heavi", styles["body"]))
+    flowables.append(Paragraph("Prepared by Felt", styles["body"]))
     flowables.append(
         Paragraph(
             "This document estimates per-property and aggregate wildfire risk "
@@ -614,7 +614,7 @@ def _page_executive_summary(job: PortfolioJob, styles: dict[str, ParagraphStyle]
         f"with risk concentrating in {top_areas}. Recommended action is to prioritise "
         "defensible-space and home-hardening investment at the top-decile properties "
         "before broader portfolio-wide treatment.",
-        "All estimates use the Heavi Sonoma wildfire model v0.1, validated against "
+        "All estimates use the Sonoma wildfire model v0.1, validated against "
         "CAL FIRE damage inspections from the 2017–2020 Sonoma fire cohort "
         f"(model AUC {job.portfolio_summary.get("validation_auc_roc", MODEL_AUC_FALLBACK):.2f} "
         "when available). See Methodology page for the full data lineage.",
@@ -1291,7 +1291,7 @@ def render_pdf(job: PortfolioJob) -> bytes:
         topMargin=1.0 * inch,
         bottomMargin=0.85 * inch,
         title="Wildfire Risk Assessment",
-        author="Heavi",
+        author="Felt",
     )
     frame = Frame(
         doc.leftMargin,

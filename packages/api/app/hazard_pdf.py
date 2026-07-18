@@ -34,7 +34,7 @@ def _chrome(canvas: Any, doc: Any) -> None:
     w, h = LETTER
     canvas.setFillColor(NAVY)
     canvas.setFont("Helvetica-Bold", 9)
-    canvas.drawString(0.75 * inch, h - 0.55 * inch, "HEAVI HAZARD")
+    canvas.drawString(0.75 * inch, h - 0.55 * inch, "FELT HAZARD")
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(MUTED)
     canvas.drawRightString(w - 0.75 * inch, h - 0.55 * inch, "Property Hazard Assessment")
@@ -43,7 +43,7 @@ def _chrome(canvas: Any, doc: Any) -> None:
     canvas.line(0.75 * inch, h - 0.62 * inch, w - 0.75 * inch, h - 0.62 * inch)
     canvas.setFont("Helvetica", 7.5)
     canvas.setFillColor(MUTED)
-    canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Heavi")
+    canvas.drawString(0.75 * inch, 0.5 * inch, f"Generated {date.today().isoformat()} · Felt")
     canvas.drawRightString(w - 0.75 * inch, 0.5 * inch, f"Page {doc.page}")
     canvas.restoreState()
 
@@ -143,7 +143,7 @@ def hazard_single_pdf(r: dict[str, Any], address: str | None = None) -> bytes:
         buf, pagesize=LETTER,
         leftMargin=0.75 * inch, rightMargin=0.75 * inch,
         topMargin=0.85 * inch, bottomMargin=0.75 * inch,
-        title="Heavi — Property Hazard Assessment", author="Heavi",
+        title="Felt — Property Hazard Assessment", author="Felt",
     )
     doc.build(story, onFirstPage=_chrome, onLaterPages=_chrome)
     return buf.getvalue()
